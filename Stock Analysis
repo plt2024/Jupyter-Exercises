@@ -1,0 +1,453 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[70]:
+
+
+get_ipython().system('pip install yfinance')
+get_ipython().system('pip install pandas')
+get_ipython().system('pip install matplotlib')
+
+
+# In[71]:
+
+
+import yfinance as yf
+import pandas as pd
+import matplotlib_inline
+
+
+# ## Using the yfinance Library to Extract Stock Data
+
+# Using the `Ticker` module we can create an object that will allow us to access functions to extract data. To do this we need to provide the ticker symbol for the stock, here the company is Apple and the ticker symbol is `AAPL`.
+
+# In[80]:
+
+
+apple = yf.Ticker("AAPL")
+
+
+# Now we can access functions and variables to extract the type of data we need. You can view them and what they represent here https://aroussi.com/post/python-yahoo-finance.
+
+# In[83]:
+
+
+get_ipython().system('wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-PY0220EN-SkillsNetwork/data/apple.json')
+
+
+# ### Stock Info
+
+# Using the attribute info we can extract information about the stock as a Python dictionary.
+
+# In[44]:
+
+
+import json
+with open('apple.json') as json_file:
+    apple_info = json.load(json_file)
+    # Print the type of data variable    
+    #print("Type:", type(apple_info))
+apple_info
+
+
+# We can get the <code>'country'</code> using the key country
+
+# In[47]:
+
+
+apple_info['country']
+
+
+# ### Extracting Share Price
+
+# A share is the single smallest part of a companys stock  that you can buy. The prices of these shares fluctuate over time. Using the `history()` method we can get the share price of the stock over a certain period of time. Using the `period` parameter we can set how far back from the present to get data. The options for `period` are 1 day (1d), 5d, 1 month (1mo) , 3mo, 6mo, 1 year (1y), 2y, 5y, 10y, ytd, and max.
+# 
+
+# In[56]:
+
+
+apple_share_price_data = apple.history(period="max")
+
+
+# The format that the data is returned in is a Pandas DataFrame. With the Date as the index the share Open, High, Low, Close, Volume, and Stock Splits are given for each day.
+
+# In[61]:
+
+
+apple_share_price_data.head()
+
+
+# We can reset the index of the DataFrame with the reset_index function. We also set the inplace paramter to True so the change takes place to the DataFrame itself.
+
+# In[64]:
+
+
+apple_share_price_data.reset_index(inplace=True)
+
+
+# We can plot the Open price against the Date:
+
+# In[67]:
+
+
+apple_share_price_data.plot(x="Date", y="Open")
+
+
+# ### Extracting Dividends
+
+# Dividends are the distribution of a companys profits to shareholders. In this case they are defined as an amount of money returned per share an investor owns. Using the variable dividends we can get a dataframe of the data. The period of the data is given by the period defined in the 'history` function.
+
+# In[71]:
+
+
+apple.dividends
+
+
+# We can plot the dividends overtime:
+
+# In[74]:
+
+
+apple.dividends.plot()
+
+
+# ### Exercise
+
+# Now using the Ticker module create an object for AMD with the ticker symbol is AMD called; name the object amd.
+
+# In[112]:
+
+
+amd = yf.Ticker("AMD")
+
+
+# In[114]:
+
+
+get_ipython().system('wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-PY0220EN-SkillsNetwork/data/amd.json')
+
+
+# In[118]:
+
+
+import json
+with open('amd.json') as json_file:
+    amd_info = json.load(json_file)
+    # Print the type of data variable    
+    #print("Type:", type(apple_info))
+amd_info
+
+
+# In[120]:
+
+
+amd_info['country']
+
+
+# In[122]:
+
+
+amd_info['sector']
+
+
+# In[124]:
+
+
+amd = yf.Ticker("AMD")
+amd_data = amd.history(period="max")
+
+
+# In[126]:
+
+
+first_day_volume = amd_data.iloc[0]['Volume']
+print(f"Volume traded on the first day: {first_day_volume}")
+
+
+# In[8]:
+
+
+get_ipython().system('pip install yfinance')
+get_ipython().system('pip install pandas')
+get_ipython().system('pip install matplotlib')
+
+
+# In[14]:
+
+
+import yfinance as yf
+import pandas as pd
+import matplotlib_inline
+
+
+# In[16]:
+
+
+nvda = yf.Ticker("NVDA")
+
+
+# In[20]:
+
+
+print (nvda)
+
+
+# In[22]:
+
+
+nvda.info
+
+
+# In[24]:
+
+
+nvda.history(period="max")
+
+
+# In[36]:
+
+
+nvda.info['country']
+
+
+# In[38]:
+
+
+nvda = yf.Ticker("NVDA")
+nvda_data = nvda.history(period="max")
+
+
+# In[40]:
+
+
+first_day_volume = nvda_data.iloc[0]['Volume']
+print(f"Volume traded on the first day: {first_day_volume}")
+
+
+# In[44]:
+
+
+nvda_data.reset_index(inplace=True)
+
+
+# In[46]:
+
+
+nvda_data.plot(x="Date", y="Open")
+
+
+# In[48]:
+
+
+nvda.dividends
+
+
+# In[52]:
+
+
+nvda.dividends.plot()
+
+
+# ### Extracting Stock Data Using a Web Scraping
+# 
+
+# Not all stock data is available via the API in this assignment; you will use web-scraping to obtain financial data. 
+# You will extract and share historical data from a web page using the BeautifulSoup library.
+
+# In[3]:
+
+
+get_ipython().system('pip install pandas')
+get_ipython().system('pip install requests')
+get_ipython().system('pip install bs4')
+get_ipython().system('pip install html5lib')
+get_ipython().system('pip install lxml')
+get_ipython().system('pip install plotly')
+
+
+# In[12]:
+
+
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+
+# In Python, you can ignore warnings using the warnings module. You can use the filterwarnings function to filter or ignore specific warning messages or categories.
+# 
+
+# In[15]:
+
+
+import warnings
+# Ignore all warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+
+
+# ## Extracting NETFLIX Stock Data
+
+# We will extract Netflix stock data https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-PY0220EN-SkillsNetwork/labs/project/netflix_data_webpage.html.
+
+# ### Steps for extracting the data
+# 1. Send an HTTP request to the web page using the requests library.
+# 2. Parse the HTML content of the web page using BeautifulSoup.
+# 3. Identify the HTML tags that contain the data you want to extract.
+# 4. Use BeautifulSoup methods to extract the data from the HTML tags.
+# 5. Print the extracted data
+
+# ### Step 1: Send an HTTP request to the web page
+
+# In[21]:
+
+
+url = "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-PY0220EN-SkillsNetwork/labs/project/netflix_data_webpage.html"
+
+
+# The requests.get() method takes a URL as its first argument, which specifies the location of the resource to be retrieved. In this case, the value of the url variable is passed as the argument to the requests.get() method, because you will store a web page URL in a url variable.
+# 
+# You use the .text method for extracting the HTML content as a string in order to make it readable.
+
+# In[24]:
+
+
+data  = requests.get(url).text
+print(data)
+
+
+# ### Step 2: Parse the HTML content
+
+# ## Parsing the data using the BeautifulSoup library¶
+# * Create a new BeautifulSoup object.
+# <br>
+# <br>
+# <b> Note: </b> To create a BeautifulSoup object in Python, you need to pass two arguments to its constructor:
+# 
+# 1. The HTML or XML content that you want to parse as a string.
+# 2. The name of the parser that you want to use to parse the HTML or XML content. This argument is optional, and if you don't specify a parser, BeautifulSoup will use the default HTML parser included with the library. here in this lab we are using "html5lib" parser.
+
+# In[31]:
+
+
+soup = BeautifulSoup(data, 'html.parser')
+
+
+# ### Step 3: Identify the HTML tags
+
+# As stated above, the web page consists of a table so, we will scrape the content of the HTML web page and convert the table into a data frame.
+
+# You will create an empty data frame using the pd.DataFrame() function with the following columns:
+# 
+# "Date"
+# "Open"
+# "High"
+# "Low"
+# "Close"
+# "Volume"
+
+# In[36]:
+
+
+netflix_data = pd.DataFrame(columns=["Date", "Open", "High", "Low", "Close", "Volume"])
+
+
+# <hr>
+# <hr>
+# <center>
+# 
+# ### Working on HTML table  </center>
+# <br>
+# 
+# These are the following tags which are used while creating HTML tables.
+# 
+# * &lt;table&gt;: This tag is a root tag used to define the start and end of the table. All the content of the table is enclosed within these tags. 
+# 
+# 
+# * &lt;tr&gt;: This tag is used to define a table row. Each row of the table is defined within this tag.
+# 
+# * &lt;td&gt;: This tag is used to define a table cell. Each cell of the table is defined within this tag. You can specify the content of the cell between the opening and closing <td> tags.
+# 
+# * &lt;th&gt;: This tag is used to define a header cell in the table. The header cell is used to describe the contents of a column or row. By default, the text inside a <th> tag is bold and centered.
+# 
+# * &lt;tbody&gt;: This is the main content of the table, which is defined using the <tbody> tag. It contains one or more rows of <tr> elements.
+# 
+# <hr>
+# <hr>
+# 
+
+# ### Step 4: Use a BeautifulSoup method for extracting data
+
+# We will use <b>find()</b> and <b>find_all()</b> methods of the BeautifulSoup object to locate the table body and table row respectively in the HTML. 
+#    * The <i>find() method </i> will return particular tag content.
+#    * The <i>find_all()</i> method returns a list of all matching tags in the HTML.
+# 
+
+# In[44]:
+
+
+# First we isolate the body of the table which contains all the information
+# Then we loop through each row and find all the column values for each row
+for row in soup.find("tbody").find_all('tr'):
+    col = row.find_all("td")
+    date = col[0].text
+    Open = col[1].text
+    high = col[2].text
+    low = col[3].text
+    close = col[4].text
+    adj_close = col[5].text
+    volume = col[6].text
+    
+    # Finally we append the data of each row to the table
+    netflix_data = pd.concat([netflix_data,pd.DataFrame({"Date":[date], "Open":[Open], "High":[high], "Low":[low], "Close":[close], "Adj Close":[adj_close], "Volume":[volume]})], ignore_index=True)    
+
+
+# ### Step 5: Print the extracted data
+
+# We can now print out the data frame using the head() or tail() function.
+
+# In[48]:
+
+
+netflix_data.head()
+
+
+# # Extracting data using `pandas` library
+
+# We can also use the pandas read_html function from the pandas library and use the URL for extracting data.
+
+# <center>
+# 
+# ## What is read_html in pandas library?
+# `pd.read_html(url)` is a function provided by the pandas library in Python that is used to extract tables from HTML web pages. It takes in a URL as input and returns a list of all the tables found on the web page. 
+# </center>
+# 
+
+# In[55]:
+
+
+read_html_pandas_data = pd.read_html(url)
+
+
+# 
+# Or you can convert the BeautifulSoup object to a string.
+
+# In[58]:
+
+
+read_html_pandas_data = pd.read_html(str(soup))
+
+
+# Because there is only one table on the page, just take the first table in the returned list.
+
+# In[63]:
+
+
+netflix_dataframe = read_html_pandas_data[0]
+
+netflix_dataframe.head()
+
+
+# In[ ]:
+
+
+
+
